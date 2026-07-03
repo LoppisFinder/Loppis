@@ -1,0 +1,416 @@
+@import "leaflet/dist/leaflet.css";
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root,
+[data-theme="light"] {
+  --color-bg: #f5f5f5;
+  --color-surface: #ffffff;
+  --color-surface-muted: #fafafa;
+  --color-surface-elevated: #f9fafb;
+  --color-border: #e5e5e5;
+  --color-border-strong: #cccccc;
+  --color-text: #1a1a1a;
+  --color-text-muted: #666666;
+  --color-text-subtle: #888888;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-soft: #dbeafe;
+  --color-primary-text: #ffffff;
+  --color-success-bg: #ecfdf5;
+  --color-success-text: #065f46;
+  --color-info-bg: #eff6ff;
+  --color-info-text: #1e40af;
+  --color-error-bg: #fef2f2;
+  --color-error-text: #991b1b;
+  --color-warning: #f59e0b;
+  --color-warning-soft: #fef3c7;
+  --color-current-month: #f59e0b;
+  --color-current-month-soft: #fffbeb;
+  --color-score-high: #dcfce7;
+  --color-score-mid: #fef9c3;
+  --color-score-low: #fee2e2;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-muted: #172033;
+  --color-surface-elevated: #334155;
+  --color-border: #334155;
+  --color-border-strong: #475569;
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+  --color-primary: #3b82f6;
+  --color-primary-hover: #60a5fa;
+  --color-primary-soft: #1e3a5f;
+  --color-primary-text: #ffffff;
+  --color-success-bg: #064e3b;
+  --color-success-text: #a7f3d0;
+  --color-info-bg: #1e3a5f;
+  --color-info-text: #bfdbfe;
+  --color-error-bg: #450a0a;
+  --color-error-text: #fecaca;
+  --color-warning: #fbbf24;
+  --color-warning-soft: #422006;
+  --color-current-month: #fbbf24;
+  --color-current-month-soft: #422006;
+  --color-score-high: #14532d;
+  --color-score-mid: #422006;
+  --color-score-low: #450a0a;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+a {
+  color: var(--color-primary);
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.app-header {
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.app-header-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.app-sidebar {
+  width: 380px;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.banner {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.banner-success {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.banner-info {
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
+}
+
+.banner-error {
+  background: var(--color-error-bg);
+  color: var(--color-error-text);
+}
+
+.btn-primary {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-primary:disabled {
+  background: var(--color-primary-soft);
+  color: var(--color-info-text);
+  cursor: wait;
+}
+
+.btn-secondary {
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-primary);
+}
+
+.settings-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.settings-label {
+  white-space: nowrap;
+}
+
+.settings-select {
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.settings-theme-btn {
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.calendar-panel {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.calendar-title {
+  font-size: 14px;
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.calendar-range-label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+.calendar-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.calendar-toolbar .btn-secondary {
+  flex: 1;
+  min-width: 90px;
+  padding: 6px 0;
+}
+
+.calendar-month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.calendar-month-tile {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px 8px;
+  cursor: pointer;
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-align: center;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.calendar-month-tile:hover {
+  border-color: var(--color-primary);
+}
+
+.calendar-month-tile.in-range {
+  background: var(--color-primary-soft);
+}
+
+.calendar-month-tile.current-month {
+  border: 2px solid var(--color-current-month);
+  background: var(--color-current-month-soft);
+  box-shadow: var(--shadow-sm);
+}
+
+.calendar-month-name {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.calendar-month-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.calendar-day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  font-size: 11px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-text-subtle);
+  padding: 4px;
+}
+
+.calendar-day {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 4px 2px;
+  cursor: pointer;
+  background: var(--color-surface);
+  color: var(--color-text);
+  min-height: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day.today {
+  border: 2px solid var(--color-primary);
+}
+
+.calendar-day.in-range {
+  background: var(--color-primary-soft);
+}
+
+.calendar-day.range-endpoint {
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.calendar-day-count {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.calendar-day.range-endpoint .calendar-day-count {
+  color: var(--color-primary-text);
+}
+
+.filter-panel {
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.filter-hint {
+  font-size: 12px;
+  color: var(--color-text-subtle);
+}
+
+.list-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  background: var(--color-surface);
+}
+
+.list-item:hover {
+  background: var(--color-surface-muted);
+}
+
+.list-empty {
+  padding: 16px;
+  color: var(--color-text-muted);
+}
+
+.detail-panel {
+  padding: 16px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.detail-muted {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.detail-score-box {
+  margin-top: 16px;
+  font-size: 13px;
+  background: var(--color-surface-elevated);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.action-btn {
+  padding: 10px 16px;
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+[data-theme="dark"] .leaflet-layer,
+[data-theme="dark"] .leaflet-control-zoom a {
+  filter: invert(1) hue-rotate(180deg);
+}

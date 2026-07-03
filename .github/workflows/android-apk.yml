@@ -1,0 +1,42 @@
+name: Android APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: Hosted API URL (HTTPS)
+        required: true
+        default: https://loppisfinder-api.onrender.com
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --filter @loppis/mobile
+
+      - name: Configure Expo
+        working-directory: apps/mobile
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          pnpm dlx eas-cli init --non-interactive --force
+
+      - name: Build APK
+        working-directory: apps/mobile
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_PUBLIC_API_URL: ${{ inputs.api_url }}
+          APP_VARIANT: production
+        run: pnpm dlx eas-cli build --platform android --profile preview --non-interactive

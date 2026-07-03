@@ -1,0 +1,159 @@
+{
+  "calendar_sites": [
+    {
+      "name": "solvallaloppis.se",
+      "base_url": "https://solvallaloppis.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T20:32:39.760473+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "roslagsloppis.se",
+      "base_url": "https://roslagsloppis.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T20:32:39.760473+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "botkyrkaloppis.se",
+      "base_url": "https://botkyrkaloppis.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T20:32:39.760473+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "tabyloppis.com",
+      "base_url": "https://tabyloppis.com",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T20:32:39.769010+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "stockholmsmarknader.se",
+      "base_url": "https://stockholmsmarknader.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T20:32:39.769010+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "loppistajm.se",
+      "base_url": "https://www.loppistajm.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T20:33:02.629231+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "loppistajm.se",
+      "base_url": "https://loppistajm.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T20:33:05.513311+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "holmensmarknad.se",
+      "base_url": "http://www.holmensmarknad.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T21:11:48.416194+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "bagageloppis.se",
+      "base_url": "http://www.bagageloppis.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T21:11:48.416194+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "loppispoppis.se",
+      "base_url": "https://www.loppispoppis.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T21:12:05.197314+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "siriusloppis.nu",
+      "base_url": "https://siriusloppis.nu",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T21:12:05.197314+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "bondensmatiuppland.se",
+      "base_url": "https://bondensmatiuppland.se",
+      "pages": [
+        "/bondens-egen-marknad/"
+      ],
+      "discovered_at": "2026-07-03T21:12:05.202541+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "destinationuppsala.se",
+      "base_url": "https://destinationuppsala.se",
+      "pages": [
+        "/se-gora-ata/marknader-loppisar/"
+      ],
+      "discovered_at": "2026-07-03T21:12:05.285670+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "kvillsfors-loppis.se",
+      "base_url": "http://www.kvillsfors-loppis.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T21:13:56.198061+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "gladaloppis.se",
+      "base_url": "http://gladaloppis.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T21:13:56.204811+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "svenskaloppisar.se",
+      "base_url": "https://svenskaloppisar.se",
+      "pages": [
+        "/tagsok.asp"
+      ],
+      "discovered_at": "2026-07-03T21:13:56.472441+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "loppistorp.se",
+      "base_url": "http://www.loppistorp.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-03T21:24:16.423668+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    }
+  ],
+  "facebook_groups": [],
+  "last_updated": "2026-07-03T21:24:16.423668+00:00"
+}

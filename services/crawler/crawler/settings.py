@@ -1,0 +1,10 @@
+BOT_NAME = "loppisfinder"
+SPIDER_MODULES = ["crawler.spiders"]
+NEWSPIDER_MODULE = "crawler.spiders"
+ROBOTSTXT_OBEY = False
+USER_AGENT = "LoppisFinder/0.1 (+https://loppisfinder.se)"
+REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
+TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
+FEED_EXPORT_ENCODING = "utf-8"
+DOWNLOAD_DELAY = 2
+CONCURRENT_REQUESTS_PER_DOMAIN = 1

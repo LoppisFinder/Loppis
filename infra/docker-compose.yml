@@ -1,0 +1,81 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: loppis
+      POSTGRES_PASSWORD: loppis
+      POSTGRES_DB: loppisfinder
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U loppis -d loppisfinder"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: ../services/api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://loppis:loppis@postgres:5432/loppisfinder
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: dev-secret-change-in-production
+      CORS_ORIGINS: http://localhost:3000,http://localhost:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ../services/api:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  worker:
+    build:
+      context: ../services/worker
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://loppis:loppis@postgres:5432/loppisfinder
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: dev-secret-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ../services/worker:/app
+      - ../services/crawler:/crawler
+    command: celery -A worker.celery_app worker --loglevel=info
+
+  beat:
+    build:
+      context: ../services/worker
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://loppis:loppis@postgres:5432/loppisfinder
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ../services/worker:/app
+    command: celery -A worker.celery_app beat --loglevel=info
+
+volumes:
+  postgres_data:

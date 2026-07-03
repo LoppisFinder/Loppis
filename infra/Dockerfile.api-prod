@@ -1,0 +1,25 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY services/api/requirements.txt ./requirements-api.txt
+RUN pip install --no-cache-dir -r requirements-api.txt
+
+COPY services/crawler/requirements.txt ./requirements-crawler.txt
+RUN grep -v '^playwright' requirements-crawler.txt > requirements-crawler-lite.txt \
+    && pip install --no-cache-dir -r requirements-crawler-lite.txt
+
+COPY services/api /app
+COPY services/crawler /crawler
+
+ENV CRAWLER_ROOT=/crawler
+
+COPY infra/entrypoint-api.sh /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
+
+EXPOSE 8000
+ENTRYPOINT ["/entrypoint.sh"]

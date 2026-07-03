@@ -1,0 +1,32 @@
+# One-click deploy for the LoppisFinder API (Render Blueprint).
+#
+# Before deploying:
+# 1. Create a free Postgres database with PostGIS (Neon or Supabase recommended).
+# 2. Run `CREATE EXTENSION IF NOT EXISTS postgis;` in that database if not already enabled.
+# 3. Set DATABASE_URL in the Render dashboard to your async URL, e.g.:
+#    postgresql+asyncpg://user:pass@host/db?sslmode=require
+#
+# After deploy, note the service URL (e.g. https://loppisfinder-api.onrender.com)
+# and set EXPO_PUBLIC_API_URL when building the Android APK.
+
+services:
+  - type: web
+    name: loppisfinder-api
+    runtime: docker
+    dockerfilePath: ./infra/Dockerfile.api-prod
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PII_SALT
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: CRAWL_AUTO_INTERVAL_HOURS
+        value: "6"
+      - key: REDIS_URL
+        value: ""
+      - key: DATABASE_URL
+        sync: false
