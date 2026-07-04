@@ -107,20 +107,21 @@ Public users **cannot** start crawls — the crawl button was removed from the m
 
 When a crawl finishes, visitors see **“Nya loppis finns tillgängliga”** and can refresh the list.
 
-## 6. GitHub Actions (optional CI/CD)
+## 6. GitHub Actions pipeline
 
-Add these secrets to the GitHub repo:
+See **[GITHUB-AZURE-PIPELINE.md](./GITHUB-AZURE-PIPELINE.md)** for full setup (Azure resources, GitHub secrets, how to run the workflow).
 
-| Secret | Value |
-|--------|--------|
+Quick summary — add these **GitHub repository secrets**:
+
+| Secret | Example |
+|--------|---------|
 | `AZURE_CREDENTIALS` | JSON from `az ad sp create-for-rbac --sdk-auth` |
-| `ACR_LOGIN_SERVER` | e.g. `loppisfinderacr.azurecr.io` |
-| `ACR_USERNAME` | ACR admin username |
-| `ACR_PASSWORD` | ACR admin password |
-| `AZURE_WEBAPP_NAME` | e.g. `loppisfinder-web` |
-| `NEXT_PUBLIC_API_URL` | Your Render API URL |
+| `ACR_LOGIN_SERVER` | `loppisfinderacr.azurecr.io` |
+| `AZURE_WEBAPP_NAME` | `loppisfinder-web` |
+| `AZURE_RESOURCE_GROUP` | `loppisfinder-rg` |
+| `NEXT_PUBLIC_API_URL` | `https://loppisfinder-api.onrender.com` |
 
-Workflow file: `.github/workflows/azure-web.yml` (builds and deploys on push to `main`).
+Run manually: **GitHub → Actions → Deploy to Azure → Run workflow**.
 
 ## Troubleshooting
 

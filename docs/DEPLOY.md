@@ -53,7 +53,7 @@ When the build finishes, EAS prints a download URL. Open it on your phone and in
 
 ## 5. Deploy the web app to Azure
 
-See **[AZURE-DEPLOY.md](./AZURE-DEPLOY.md)** for full steps (Container Registry + App Service).
+See **[AZURE-DEPLOY.md](./AZURE-DEPLOY.md)** (manual Docker deploy) or **[GITHUB-AZURE-PIPELINE.md](./GITHUB-AZURE-PIPELINE.md)** (GitHub Actions — recommended).
 
 After deploy:
 
