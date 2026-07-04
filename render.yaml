@@ -23,7 +23,7 @@ services:
       - key: PII_SALT
         generateValue: true
       - key: CORS_ORIGINS
-        value: "*"
+        value: "http://localhost:3000,https://loppisfinder-web.azurewebsites.net"
       - key: CRAWL_AUTO_INTERVAL_HOURS
         value: "0"
       - key: ADMIN_PASSWORD
