@@ -11,22 +11,43 @@ down_revision: Union[str, None] = "001"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
+FEED_SOURCE_KIND = postgresql.ENUM(
+    "calendar",
+    "facebook_group",
+    name="feed_source_kind",
+    create_type=False,
+)
+
 
 def upgrade() -> None:
-    feed_kind = sa.Enum("calendar", "facebook_group", name="feed_source_kind")
-    feed_kind.create(op.get_bind(), checkfirst=True)
+    # Idempotent enum create (partial deploys may have created the type already)
+    op.execute(
+        """
+        DO $$ BEGIN
+            CREATE TYPE feed_source_kind AS ENUM ('calendar', 'facebook_group');
+        EXCEPTION
+            WHEN duplicate_object THEN NULL;
+        END $$;
+        """
+    )
 
     op.create_table(
         "crawl_feed_source",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column("name", sa.String(200), nullable=False),
         sa.Column("url", sa.String(2000), nullable=False),
-        sa.Column("kind", feed_kind, nullable=False),
+        sa.Column("kind", FEED_SOURCE_KIND, nullable=False),
         sa.Column("pages", postgresql.ARRAY(sa.String())),
         sa.Column("enabled", sa.Boolean(), server_default="true"),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()")),
+        if_not_exists=True,
     )
-    op.create_index("ix_crawl_feed_source_enabled", "crawl_feed_source", ["enabled"])
+    op.create_index(
+        "ix_crawl_feed_source_enabled",
+        "crawl_feed_source",
+        ["enabled"],
+        if_not_exists=True,
+    )
 
     op.create_table(
         "crawl_settings",
@@ -40,24 +61,28 @@ def upgrade() -> None:
         sa.Column("last_run_at", sa.DateTime(timezone=True)),
         sa.Column("last_ingested", sa.Integer(), server_default="0"),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()")),
+        if_not_exists=True,
     )
 
     op.execute(
         """
         INSERT INTO crawl_settings (id, auto_enabled, interval_hours, data_version)
         VALUES (1, true, 6, '0')
+        ON CONFLICT (id) DO NOTHING
         """
     )
     op.execute(
         """
         INSERT INTO crawl_feed_source (id, name, url, kind, pages, enabled)
-        VALUES (
+        SELECT
             gen_random_uuid(),
             'loppistajm',
             'https://loppistajm.se',
             'calendar',
             ARRAY['/kalender.html', '/'],
             true
+        WHERE NOT EXISTS (
+            SELECT 1 FROM crawl_feed_source WHERE url = 'https://loppistajm.se'
         )
         """
     )
@@ -67,4 +92,4 @@ def downgrade() -> None:
     op.drop_table("crawl_settings")
     op.drop_index("ix_crawl_feed_source_enabled", table_name="crawl_feed_source")
     op.drop_table("crawl_feed_source")
-    sa.Enum(name="feed_source_kind").drop(op.get_bind(), checkfirst=True)
+    op.execute("DROP TYPE IF EXISTS feed_source_kind")
