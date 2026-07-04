@@ -12,13 +12,21 @@ $GitBin = "C:\Program Files\Git\bin"
 
 if (Test-Path (Join-Path $GitBin "git.exe")) {
   $env:Path = "$GitBin;$env:Path"
+  Remove-Item Env:EAS_NO_VCS -ErrorAction SilentlyContinue
 } else {
   $env:EAS_NO_VCS = "1"
   Write-Host "Git not found - using EAS_NO_VCS=1"
 }
 
+# Monorepo: tell EAS where app.config.js lives (required for non-interactive builds)
+$env:EAS_PROJECT_ROOT = $MobileRoot
+
 if (-not (Test-Path $Pnpm)) {
   throw "pnpm not found. Install Node.js LTS and run: npm install -g pnpm"
+}
+
+if (-not (Test-Path (Join-Path $MobileRoot "eas.json"))) {
+  throw "Missing apps/mobile/eas.json - run this script from the Loppis repo."
 }
 
 if (-not $ApiUrl) {
@@ -30,7 +38,7 @@ if (-not $ApiUrl) {
 $env:EXPO_PUBLIC_API_URL = $ApiUrl
 $env:APP_VARIANT = "production"
 
-Push-Location $MobileRoot
+Push-Location $RepoRoot
 try {
   Write-Host "Checking Expo login..."
   & $Pnpm dlx eas-cli@latest whoami 2>&1 | Out-String | Write-Host
@@ -39,11 +47,11 @@ try {
     Write-Host "Not logged in to Expo. Run once:"
     Write-Host "  cd apps\mobile"
     Write-Host "  pnpm dlx eas-cli login"
-    Write-Host "  pnpm dlx eas-cli init"
     throw "Expo login required before building APK."
   }
 
   Write-Host "Starting EAS Android build (profile: $Profile)..."
+  Write-Host "EAS project root: $MobileRoot"
   Write-Host "API URL baked into app: $ApiUrl"
   & $Pnpm dlx eas-cli@latest build `
     --platform android `

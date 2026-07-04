@@ -11,7 +11,8 @@ module.exports = {
   icon: "./assets/icon.png",
   experiments: {
     tsconfigPaths: true,
-  },  plugins: ["expo-router", "expo-location", "expo-notifications", "expo-secure-store"],
+  },
+  plugins: ["expo-router", "expo-location", "expo-notifications", "expo-secure-store"],
   android: {
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
