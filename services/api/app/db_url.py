@@ -4,6 +4,15 @@ from __future__ import annotations
 
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
+# libpq URL params that asyncpg does not accept via SQLAlchemy connect()
+_ASYNCPG_STRIP_PARAMS = (
+    "sslmode",
+    "channel_binding",
+    "options",
+    "target_session_attrs",
+    "gssencmode",
+)
+
 
 def normalize_async_database_url(url: str) -> tuple[str, dict]:
     """Return asyncpg-compatible URL and connect_args."""
@@ -17,6 +26,9 @@ def normalize_async_database_url(url: str) -> tuple[str, dict]:
     connect_args: dict = {}
 
     sslmode = query.pop("sslmode", None)
+    for key in _ASYNCPG_STRIP_PARAMS:
+        query.pop(key, None)
+
     if sslmode in ("require", "verify-full", "verify-ca") or "neon.tech" in (parsed.hostname or ""):
         connect_args["ssl"] = True
 
