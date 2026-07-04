@@ -12,7 +12,20 @@ module.exports = {
   experiments: {
     tsconfigPaths: true,
   },
-  plugins: ["expo-router", "expo-location", "expo-notifications", "expo-secure-store"],
+  plugins: [
+    [
+      "expo-build-properties",
+      {
+        android: {
+          kotlinVersion: "1.9.25",
+        },
+      },
+    ],
+    "expo-router",
+    "expo-location",
+    "expo-notifications",
+    "expo-secure-store",
+  ],
   android: {
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
