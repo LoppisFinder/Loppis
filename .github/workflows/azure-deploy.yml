@@ -30,7 +30,7 @@ jobs:
     environment: production
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Validate secrets
         run: |
@@ -41,7 +41,7 @@ jobs:
           test -n "${{ secrets.NEXT_PUBLIC_API_URL }}" || { echo "Missing NEXT_PUBLIC_API_URL"; exit 1; }
 
       - name: Log in to Azure
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 

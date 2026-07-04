@@ -163,7 +163,8 @@ The pipeline also runs when you push to `main` and change:
 
 | Problem | Fix |
 |---------|-----|
-| `Missing AZURE_CREDENTIALS` | Add all secrets from Part 3 |
+| Yellow **Node.js 20 is deprecated** banner | Harmless on GitHub-hosted runners; workflow uses `checkout@v5` and `azure/login@v3` for Node 24 |
+| `Missing AZURE_CREDENTIALS` | Add all secrets from Part 3 to the **`production`** environment |
 | `MissingSubscriptionRegistration` | Run `az provider register --namespace Microsoft.ContainerRegistry --wait` |
 | Pipeline OK but site blank | Check `NEXT_PUBLIC_API_URL` secret; re-run workflow |
 | CORS errors in browser | Add Azure URL to Render `CORS_ORIGINS` |
