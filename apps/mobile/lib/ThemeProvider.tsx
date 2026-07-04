@@ -1,7 +1,4 @@
-"use client";
-
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { colors, loadStoredTheme, saveTheme, type Theme, type ThemeColors } from "@/lib/theme";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";import { colors, loadStoredTheme, saveTheme, type Theme, type ThemeColors } from "@/lib/theme";
 
 interface ThemeContextValue {
   theme: Theme;

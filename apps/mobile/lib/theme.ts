@@ -49,7 +49,7 @@ export const colors = {
   },
 } as const;
 
-export type ThemeColors = (typeof colors)["light"];
+export type ThemeColors = (typeof colors)[Theme];
 
 const THEME_KEY = "loppis_theme";
 

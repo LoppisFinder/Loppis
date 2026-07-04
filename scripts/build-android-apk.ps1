@@ -8,6 +8,14 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $MobileRoot = Join-Path $RepoRoot "apps\mobile"
 $Pnpm = Join-Path $env:APPDATA "npm\pnpm.cmd"
+$GitBin = "C:\Program Files\Git\bin"
+
+if (Test-Path (Join-Path $GitBin "git.exe")) {
+  $env:Path = "$GitBin;$env:Path"
+} else {
+  $env:EAS_NO_VCS = "1"
+  Write-Host "Git not found - using EAS_NO_VCS=1"
+}
 
 if (-not (Test-Path $Pnpm)) {
   throw "pnpm not found. Install Node.js LTS and run: npm install -g pnpm"
@@ -47,7 +55,7 @@ try {
   }
 
   Write-Host ""
-  Write-Host "When complete, download the APK from the URL above and install on your phone."
+  Write-Host "Done. Download the APK from the URL above and install on your phone."
 } finally {
   Pop-Location
 }

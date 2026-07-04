@@ -170,8 +170,35 @@
       ],
       "discovered_at": "2026-07-04T13:34:37.272276+00:00",
       "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "bjarenu.se",
+      "base_url": "http://bjarenu.se",
+      "pages": [
+        "/bjare/loppis-i-baastad-kommun/6781"
+      ],
+      "discovered_at": "2026-07-04T15:32:05.165977+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "skanetur.se",
+      "base_url": "https://www.skanetur.se",
+      "pages": [
+        "/loppisar-i-skane-2025-hitta-flera-second-hand-butiker/"
+      ],
+      "discovered_at": "2026-07-04T15:32:05.215716+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "loppisportalen.se",
+      "base_url": "https://loppisportalen.se",
+      "pages": [
+        "/hitta-loppis/"
+      ],
+      "discovered_at": "2026-07-04T15:32:26.920557+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
     }
   ],
   "facebook_groups": [],
-  "last_updated": "2026-07-04T13:34:37.272276+00:00"
+  "last_updated": "2026-07-04T15:32:26.920557+00:00"
 }

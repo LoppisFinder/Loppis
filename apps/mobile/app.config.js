@@ -9,7 +9,9 @@ module.exports = {
   scheme: "loppisfinder",
   userInterfaceStyle: "automatic",
   icon: "./assets/icon.png",
-  plugins: ["expo-router", "expo-location", "expo-notifications", "expo-secure-store"],
+  experiments: {
+    tsconfigPaths: true,
+  },  plugins: ["expo-router", "expo-location", "expo-notifications", "expo-secure-store"],
   android: {
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
@@ -25,6 +27,9 @@ module.exports = {
     },
   },
   extra: {
+    eas: {
+      projectId: "7574a2c7-11c2-43c7-b087-78e0aa767069",
+    },
     apiUrl:
       process.env.EXPO_PUBLIC_API_URL ??
       (isProduction ? "https://loppisfinder-api.onrender.com" : "http://10.0.2.2:8000"),
