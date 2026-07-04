@@ -18,15 +18,8 @@ if (Test-Path (Join-Path $GitBin "git.exe")) {
   Write-Host "Git not found - using EAS_NO_VCS=1"
 }
 
-# Monorepo: tell EAS where app.config.js lives (required for non-interactive builds)
-$env:EAS_PROJECT_ROOT = $MobileRoot
-
 if (-not (Test-Path $Pnpm)) {
   throw "pnpm not found. Install Node.js LTS and run: npm install -g pnpm"
-}
-
-if (-not (Test-Path (Join-Path $MobileRoot "eas.json"))) {
-  throw "Missing apps/mobile/eas.json - run this script from the Loppis repo."
 }
 
 if (-not $ApiUrl) {
@@ -38,7 +31,8 @@ if (-not $ApiUrl) {
 $env:EXPO_PUBLIC_API_URL = $ApiUrl
 $env:APP_VARIANT = "production"
 
-Push-Location $RepoRoot
+# Must run EAS from apps/mobile (monorepo)
+Push-Location $MobileRoot
 try {
   Write-Host "Checking Expo login..."
   & $Pnpm dlx eas-cli@latest whoami 2>&1 | Out-String | Write-Host
