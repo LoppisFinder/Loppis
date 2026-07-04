@@ -93,7 +93,7 @@ Click **New repository secret** for each:
 | Secret | Example value | Notes |
 |--------|---------------|--------|
 | `AZURE_CREDENTIALS` | Full JSON from `create-for-rbac --sdk-auth` | Entire `{ "clientId": ... }` block |
-| `ACR_LOGIN_SERVER` | `loppisfinderacr.azurecr.io` | `{ACR_NAME}.azurecr.io` |
+| `ACR_LOGIN_SERVER` | `loppisfinderacr.azurecr.io` | **No** `https://`, **no** trailing spaces/newlines. Registry name only (`loppisfinderacr`) also works |
 | `AZURE_WEBAPP_NAME` | `loppisfinder-web` | App Service name |
 | `AZURE_RESOURCE_GROUP` | `loppisfinder-rg` | Resource group name |
 | `NEXT_PUBLIC_API_URL` | `https://loppisfinder-api.onrender.com` | Render API URL |
@@ -169,7 +169,7 @@ The pipeline also runs when you push to `main` and change:
 | Pipeline OK but site blank | Check `NEXT_PUBLIC_API_URL` secret; re-run workflow |
 | CORS errors in browser | Add Azure URL to Render `CORS_ORIGINS` |
 | `Login failed` with `az acr login` in Actions | Ensure service principal has **AcrPush** on the registry |
-| Container pull failed on App Service | Re-run pipeline (it sets ACR credentials on the Web App each time) |
+| `Login server suffix is not valid` | Re-save `ACR_LOGIN_SERVER` as exactly `yourregistry.azurecr.io` (no https, no line break). Or use just `yourregistry` |
 
 ---
 

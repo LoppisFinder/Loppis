@@ -40,20 +40,40 @@ jobs:
           test -n "${{ secrets.AZURE_RESOURCE_GROUP }}" || { echo "Missing AZURE_RESOURCE_GROUP"; exit 1; }
           test -n "${{ secrets.NEXT_PUBLIC_API_URL }}" || { echo "Missing NEXT_PUBLIC_API_URL"; exit 1; }
 
+      - name: Resolve ACR settings
+        run: |
+          RAW=$(printf '%s' "${{ secrets.ACR_LOGIN_SERVER }}" | tr -d '\r\n' | xargs)
+          RAW="${RAW#https://}"
+          RAW="${RAW#http://}"
+          RAW="${RAW%/}"
+
+          if [[ "$RAW" == *.azurecr.io ]]; then
+            ACR_NAME="${RAW%%.azurecr.io}"
+            ACR_LOGIN_SERVER="$RAW"
+          elif [[ "$RAW" == *.* ]]; then
+            echo "Invalid ACR_LOGIN_SERVER: '$RAW'"
+            echo "Use only the registry name (e.g. loppisfinderacr) or login server (e.g. loppisfinderacr.azurecr.io)"
+            exit 1
+          else
+            ACR_NAME="$RAW"
+            ACR_LOGIN_SERVER="${RAW}.azurecr.io"
+          fi
+
+          echo "ACR_NAME=$ACR_NAME" >> "$GITHUB_ENV"
+          echo "ACR_LOGIN_SERVER=$ACR_LOGIN_SERVER" >> "$GITHUB_ENV"
+          echo "Using ACR: $ACR_NAME ($ACR_LOGIN_SERVER)"
+
       - name: Log in to Azure
         uses: azure/login@v3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Log in to Azure Container Registry
-        run: |
-          ACR_NAME="${{ secrets.ACR_LOGIN_SERVER }}"
-          ACR_NAME="${ACR_NAME%%.azurecr.io}"
-          az acr login --name "$ACR_NAME"
+        run: az acr login --name "$ACR_NAME"
 
       - name: Build and push web image
         run: |
-          IMAGE="${{ secrets.ACR_LOGIN_SERVER }}/${{ env.WEB_IMAGE_NAME }}"
+          IMAGE="${ACR_LOGIN_SERVER}/${{ env.WEB_IMAGE_NAME }}"
           docker build \
             -f infra/Dockerfile.web-prod \
             --build-arg NEXT_PUBLIC_API_URL="${{ secrets.NEXT_PUBLIC_API_URL }}" \
@@ -65,16 +85,14 @@ jobs:
 
       - name: Configure Web App container settings
         run: |
-          ACR_NAME="${{ secrets.ACR_LOGIN_SERVER }}"
-          ACR_NAME="${ACR_NAME%%.azurecr.io}"
           ACR_USER=$(az acr credential show --name "$ACR_NAME" --query username -o tsv)
           ACR_PASS=$(az acr credential show --name "$ACR_NAME" --query "passwords[0].value" -o tsv)
 
           az webapp config container set \
             --name "${{ secrets.AZURE_WEBAPP_NAME }}" \
             --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
-            --docker-custom-image-name "${{ secrets.ACR_LOGIN_SERVER }}/${{ env.WEB_IMAGE_NAME }}:${{ github.sha }}" \
-            --docker-registry-server-url "https://${{ secrets.ACR_LOGIN_SERVER }}" \
+            --docker-custom-image-name "${ACR_LOGIN_SERVER}/${{ env.WEB_IMAGE_NAME }}:${{ github.sha }}" \
+            --docker-registry-server-url "https://${ACR_LOGIN_SERVER}" \
             --docker-registry-server-user "$ACR_USER" \
             --docker-registry-server-password "$ACR_PASS"
 
@@ -87,11 +105,12 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          images: ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.WEB_IMAGE_NAME }}:${{ github.sha }}
+          images: ${{ env.ACR_LOGIN_SERVER }}/${{ env.WEB_IMAGE_NAME }}:${{ github.sha }}
 
       - name: Deployment summary
         run: |
           echo "## Web deployed" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Image: \`${{ secrets.ACR_LOGIN_SERVER }}/${{ env.WEB_IMAGE_NAME }}:${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Registry: \`${ACR_LOGIN_SERVER}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Image: \`${ACR_LOGIN_SERVER}/${{ env.WEB_IMAGE_NAME }}:${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- Site: https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net" >> "$GITHUB_STEP_SUMMARY"
           echo "- Admin: https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net/admin" >> "$GITHUB_STEP_SUMMARY"
