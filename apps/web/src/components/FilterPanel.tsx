@@ -1,6 +1,5 @@
 "use client";
 
-import { FilterPanel } from "@/components/FilterPanel";
 import { useI18n } from "@/lib/i18n/context";
 import { formatRangeLabel, type DateRange } from "@/lib/dates";
 
