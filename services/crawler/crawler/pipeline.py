@@ -14,10 +14,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from crawler.adapters.base import RawListing
 from crawler.privacy import strip_pii
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql+asyncpg://loppis:loppis@localhost:5432/loppisfinder"
-)
-
 from crawler.discovery.sweden import MUNICIPALITY_COORDS, coords_for_municipality
 
 _geocode_cache: dict[str, tuple[float, float]] = {}
@@ -57,9 +53,14 @@ async def geocode(address: str | None, municipality: str | None) -> tuple[float,
 
 
 async def ingest_listings(listings: list[RawListing]) -> int:
+    from app.db_url import normalize_async_database_url
     from app.models import Loppis, LoppisSource, LoppisStatus, SourceType
 
-    engine = create_async_engine(DATABASE_URL)
+    raw_url = os.getenv(
+        "DATABASE_URL", "postgresql+asyncpg://loppis:loppis@localhost:5432/loppisfinder"
+    )
+    db_url, connect_args = normalize_async_database_url(raw_url)
+    engine = create_async_engine(db_url, connect_args=connect_args)
     session_factory = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     ingested = 0
     now = datetime.now(timezone.utc)

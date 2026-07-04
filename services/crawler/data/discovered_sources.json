@@ -152,8 +152,26 @@
       ],
       "discovered_at": "2026-07-03T21:24:16.423668+00:00",
       "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "bagageloppis.se",
+      "base_url": "http://bagageloppis.se",
+      "pages": [
+        "/"
+      ],
+      "discovered_at": "2026-07-04T13:34:37.270274+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
+    },
+    {
+      "name": "bagageloppis.se",
+      "base_url": "https://www.bagageloppis.se",
+      "pages": [
+        "/backaplan/"
+      ],
+      "discovered_at": "2026-07-04T13:34:37.272276+00:00",
+      "link_pattern": "loppis|loppmarknad|bakluck|\\d{1,2}/\\d{1,2}"
     }
   ],
   "facebook_groups": [],
-  "last_updated": "2026-07-03T21:24:16.423668+00:00"
+  "last_updated": "2026-07-04T13:34:37.272276+00:00"
 }

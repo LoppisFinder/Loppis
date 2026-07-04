@@ -57,3 +57,5 @@ Without a Maps API key the app still works but map tiles may be blank on some de
 | Empty map | Add Google Maps API key and rebuild |
 | Crawl slow on free tier | Render free tier sleeps after inactivity — first request wakes it (~30s) |
 | Install blocked | Enable “Install unknown apps” for your browser/file manager |
+| Render deploy failed | Check **Logs** in Render dashboard. Common fixes: set `DATABASE_URL` (Neon URL with `postgresql+asyncpg://`), enable PostGIS in Neon, then **Manual Deploy → Clear build cache & deploy** |
+| Migration / SSL error | Use Neon **direct** connection string; PostGIS: `CREATE EXTENSION postgis;` |

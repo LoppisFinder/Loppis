@@ -1,5 +1,7 @@
 from pydantic_settings import BaseSettings
 
+from app.db_url import normalize_async_database_url
+
 
 class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://loppis:loppis@localhost:5432/loppisfinder"
@@ -13,6 +15,16 @@ class Settings(BaseSettings):
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+    @property
+    def async_database_url(self) -> str:
+        url, _ = normalize_async_database_url(self.database_url)
+        return url
+
+    @property
+    def async_connect_args(self) -> dict:
+        _, connect_args = normalize_async_database_url(self.database_url)
+        return connect_args
 
     class Config:
         env_file = ".env"
