@@ -19,6 +19,7 @@ COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
 COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY . .
 RUN pnpm --filter @loppis/web build
+RUN mkdir -p /app/apps/web/public
 
 FROM node:20-alpine AS runner
 WORKDIR /app
