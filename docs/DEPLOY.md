@@ -82,5 +82,5 @@ Without a Maps API key the app still works but map tiles may be blank on some de
 | `EAS project not configured` | Run EAS from **`apps/mobile`**, not repo root. Check: `cd apps\mobile; pnpm dlx eas-cli project:info`. Do **not** run `eas init` at repo root — it creates stray `eas.json` / `app.json` there |
 | Admin login fails | Set `ADMIN_PASSWORD` on the API and redeploy. Run DB migration (`alembic upgrade head` on deploy) |
 | Web CORS error | Add your Azure web URL to API `CORS_ORIGINS` |
-| Render deploy failed | Check **Logs** in Render dashboard. Common fixes: set `DATABASE_URL` (Neon URL with `postgresql+asyncpg://`), enable PostGIS in Neon, then **Manual Deploy → Clear build cache & deploy** |
+| Render deploy failed | Check **Logs** in Render dashboard. Set `DATABASE_URL` with `postgresql+asyncpg://` (Neon URL). Remove `channel_binding=require` from the URL if present. Enable PostGIS in Neon, then **Manual Deploy → Clear build cache & deploy** |
 | Migration / SSL error | Use Neon **direct** connection string; PostGIS: `CREATE EXTENSION postgis;` |

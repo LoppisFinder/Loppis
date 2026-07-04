@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings
 
-from app.db_url import normalize_async_database_url
+from app.db_url import asyncpg_connect_args, normalize_async_database_url
 
 
 class Settings(BaseSettings):
@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     @property
     def async_connect_args(self) -> dict:
         _, connect_args = normalize_async_database_url(self.database_url)
-        return connect_args
+        return asyncpg_connect_args(connect_args)
 
     class Config:
         env_file = ".env"

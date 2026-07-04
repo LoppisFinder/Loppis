@@ -53,14 +53,14 @@ async def geocode(address: str | None, municipality: str | None) -> tuple[float,
 
 
 async def ingest_listings(listings: list[RawListing]) -> int:
-    from app.db_url import normalize_async_database_url
+    from app.db_url import asyncpg_connect_args, normalize_async_database_url
     from app.models import Loppis, LoppisSource, LoppisStatus, SourceType
 
     raw_url = os.getenv(
         "DATABASE_URL", "postgresql+asyncpg://loppis:loppis@localhost:5432/loppisfinder"
     )
     db_url, connect_args = normalize_async_database_url(raw_url)
-    engine = create_async_engine(db_url, connect_args=connect_args)
+    engine = create_async_engine(db_url, connect_args=asyncpg_connect_args(connect_args))
     session_factory = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     ingested = 0
     now = datetime.now(timezone.utc)
