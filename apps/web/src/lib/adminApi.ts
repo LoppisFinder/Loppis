@@ -111,6 +111,14 @@ export function deleteSource(token: string, id: string) {
   return adminFetch<{ deleted: boolean }>(`/v1/admin/sources/${id}`, token, { method: "DELETE" });
 }
 
+export function syncRegistrySources(token: string) {
+  return adminFetch<{ added: number; updated: number; calendar_sites: number; facebook_groups: number }>(
+    "/v1/admin/sources/sync-registry",
+    token,
+    { method: "POST" }
+  );
+}
+
 export function getCrawlSettings(token: string) {
   return adminFetch<CrawlSettings>("/v1/admin/crawl/settings", token);
 }

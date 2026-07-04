@@ -19,6 +19,7 @@ from app.services.crawl_admin import (
     set_feed_source_enabled,
     update_crawl_settings,
 )
+from app.services.source_registry_sync import sync_registry_sources
 
 router = APIRouter(prefix="/v1/admin", tags=["admin"])
 
@@ -140,6 +141,15 @@ async def admin_delete_source(
     if not await delete_feed_source(db, source_id):
         raise HTTPException(status_code=404, detail="Source not found")
     return {"deleted": True}
+
+
+@router.post("/sources/sync-registry")
+async def admin_sync_registry_sources(
+    _: Annotated[None, Depends(require_admin)],
+    db: AsyncSession = Depends(get_db),
+):
+    """Import calendar sites and Facebook groups from discovered_sources.json."""
+    return await sync_registry_sources(db)
 
 
 @router.get("/crawl/settings", response_model=CrawlSettingsOut)

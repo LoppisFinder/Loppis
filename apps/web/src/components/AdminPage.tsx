@@ -12,6 +12,7 @@ import {
   getCrawlStatus,
   listSources,
   runCrawl,
+  syncRegistrySources,
   toggleSource,
   updateCrawlSettings,
   type CrawlSettings,
@@ -242,6 +243,25 @@ export default function AdminPage() {
 
       <section className="admin-section">
         <h2>Crawl sources</h2>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() =>
+              token &&
+              syncRegistrySources(token)
+                .then((result) => {
+                  setStatusMsg(
+                    `Imported registry — ${result.added} added, ${result.updated} updated (${result.calendar_sites} sites)`
+                  );
+                  return loadAll(token);
+                })
+                .catch((err) => setError(err instanceof Error ? err.message : "Import failed"))
+            }
+          >
+            Import from local registry file
+          </button>
+        </div>
         <form onSubmit={handleAddSource} className="admin-form admin-form-inline">
           <input
             placeholder="Name"
