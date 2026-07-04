@@ -4,7 +4,7 @@ const isProduction = process.env.APP_VARIANT === "production";
 module.exports = {
   name: "LoppisFinder",
   slug: "loppisfinder",
-  version: "1.0.0",
+  version: "1.0.1",
   orientation: "portrait",
   scheme: "loppisfinder",
   userInterfaceStyle: "automatic",
@@ -23,7 +23,6 @@ module.exports = {
     ],
     "expo-router",
     "expo-location",
-    "expo-notifications",
     "expo-secure-store",
   ],
   android: {
@@ -32,13 +31,18 @@ module.exports = {
       backgroundColor: "#2563eb",
     },
     package: "se.loppisfinder.app",
+    versionCode: 2,
     permissions: ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
     usesCleartextTraffic: !isProduction,
-    config: {
-      googleMaps: {
-        apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
-      },
-    },
+    ...(process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+      ? {
+          config: {
+            googleMaps: {
+              apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
+            },
+          },
+        }
+      : {}),
   },
   extra: {
     eas: {

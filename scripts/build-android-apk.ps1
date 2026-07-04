@@ -44,6 +44,17 @@ try {
     throw "Expo login required before building APK."
   }
 
+  Write-Host "Verifying EAS project (must run from apps/mobile)..."
+  & $Pnpm dlx eas-cli@latest project:info --non-interactive 2>&1 | Out-String | Write-Host
+  if ($LASTEXITCODE -ne 0) {
+    Write-Host ""
+    Write-Host "EAS cannot find the project. Common causes:"
+    Write-Host "  - You are not in apps\mobile (current: $MobileRoot)"
+    Write-Host "  - extra.eas.projectId missing from app.config.js"
+    Write-Host "  - Not logged in: pnpm dlx eas-cli login"
+    throw "EAS project not configured. Run: cd apps\mobile; pnpm dlx eas-cli project:info"
+  }
+
   Write-Host "Starting EAS Android build (profile: $Profile)..."
   Write-Host "EAS project root: $MobileRoot"
   Write-Host "API URL baked into app: $ApiUrl"

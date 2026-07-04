@@ -119,6 +119,13 @@ export const ReportType = z.enum([
 ]);
 export type ReportType = z.infer<typeof ReportType>;
 
+export const MetaSchema = z.object({
+  data_version: z.string(),
+  last_crawl_at: z.string().nullable(),
+  total_loppis: z.number(),
+});
+export type Meta = z.infer<typeof MetaSchema>;
+
 export function reliabilityLabel(score: number, status: LoppisStatus): string {
   if (status === "cancelled") return "Inställd";
   if (score >= 70) return "Pålitlig";
@@ -146,6 +153,12 @@ export class LoppisApiClient {
     });
     if (!res.ok) throw new Error(`Session failed: ${res.status}`);
     return AnonymousSessionSchema.parse(await res.json());
+  }
+
+  async getMeta(): Promise<Meta> {
+    const res = await fetch(`${this.baseUrl}/v1/meta`);
+    if (!res.ok) throw new Error(`Meta failed: ${res.status}`);
+    return MetaSchema.parse(await res.json());
   }
 
   async listLoppis(query: LoppisListQuery): Promise<LoppisSummary[]> {

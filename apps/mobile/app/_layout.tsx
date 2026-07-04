@@ -6,8 +6,12 @@ import { useTheme } from "@/lib/ThemeProvider";
 import { useI18n } from "@/lib/I18nProvider";
 
 function RootStack() {
-  const { theme } = useTheme();
-  const { t } = useI18n();
+  const { theme, ready: themeReady } = useTheme();
+  const { t, ready: i18nReady } = useI18n();
+
+  if (!themeReady || !i18nReady) {
+    return null;
+  }
 
   return (
     <>

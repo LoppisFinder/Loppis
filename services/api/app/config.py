@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000,http://localhost:8081"
     pii_salt: str = "change-me-in-production"
     crawl_auto_interval_hours: float = 6.0
+    admin_password: str = ""
+
+    @property
+    def admin_enabled(self) -> bool:
+        return bool(self.admin_password.strip())
 
     @property
     def cors_origin_list(self) -> list[str]:

@@ -13,6 +13,7 @@ import { FilterPanel } from "@/components/FilterPanel";
 import { LoppisDetailPanel } from "@/components/LoppisDetailPanel";
 import { LoppisList } from "@/components/LoppisList";
 import { MonthCalendar } from "@/components/MonthCalendar";
+import { NewLoppisBanner } from "@/components/NewLoppisBanner";
 import { SessionBanner } from "@/components/SessionBanner";
 import { SettingsBar } from "@/components/SettingsBar";
 import { currentYearRange, endOfDay, startOfDay, type DateRange } from "@/lib/dates";
@@ -34,8 +35,8 @@ export default function HomePage() {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [panToCenter, setPanToCenter] = useState(false);
-  const [crawlMsg, setCrawlMsg] = useState<string | null>(null);
-  const [crawling, setCrawling] = useState(false);
+  const [knownDataVersion, setKnownDataVersion] = useState<string | null>(null);
+  const [newDataAvailable, setNewDataAvailable] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("loppis_token");
@@ -48,16 +49,21 @@ export default function HomePage() {
   const fetchLoppis = useCallback(async () => {
     setLoading(true);
     setFetchError(null);
+    setNewDataAvailable(false);
     try {
-      const data = await client.listLoppis({
-        lat: center.lat,
-        lng: center.lng,
-        radius_km: radiusKm,
-        from: startOfDay(dateRange.from).toISOString(),
-        to: endOfDay(dateRange.to).toISOString(),
-        min_score: minScore,
-      });
+      const [data, meta] = await Promise.all([
+        client.listLoppis({
+          lat: center.lat,
+          lng: center.lng,
+          radius_km: radiusKm,
+          from: startOfDay(dateRange.from).toISOString(),
+          to: endOfDay(dateRange.to).toISOString(),
+          min_score: minScore,
+        }),
+        client.getMeta(),
+      ]);
       setLoppis(data);
+      setKnownDataVersion(meta.data_version);
     } catch (e) {
       console.error(e);
       setLoppis([]);
@@ -70,6 +76,21 @@ export default function HomePage() {
   useEffect(() => {
     fetchLoppis();
   }, [fetchLoppis]);
+
+  useEffect(() => {
+    if (!knownDataVersion) return;
+    const timer = setInterval(async () => {
+      try {
+        const meta = await client.getMeta();
+        if (meta.data_version !== knownDataVersion) {
+          setNewDataAvailable(true);
+        }
+      } catch {
+        /* ignore polling errors */
+      }
+    }, 60_000);
+    return () => clearInterval(timer);
+  }, [client, knownDataVersion]);
 
   useEffect(() => {
     if (!token) return;
@@ -122,54 +143,12 @@ export default function HomePage() {
     setSelected(null);
   }, []);
 
-  const runCrawl = async () => {
-    setCrawling(true);
-    setCrawlMsg(t("crawlStart"));
-    try {
-      const start = await fetch(`${API_BASE_URL}/v1/crawl/run`, { method: "POST" });
-      if (!start.ok) throw new Error(`Crawl failed: ${start.status}`);
-
-      for (let i = 0; i < 120; i++) {
-        const statusRes = await fetch(`${API_BASE_URL}/v1/crawl/status`);
-        if (statusRes.ok) {
-          const status = await statusRes.json();
-          if (status.message) setCrawlMsg(status.message);
-          if (status.running) {
-            await new Promise((r) => setTimeout(r, 2000));
-            continue;
-          }
-          if (status.last_report) {
-            const data = status.last_report;
-            setCrawlMsg(
-              t("crawlDone", { ingested: data.ingested, discovered: data.discovered })
-            );
-            await fetch(`${API_BASE_URL}/v1/crawl/seed-examples`, { method: "DELETE" });
-            fetchLoppis();
-            return;
-          }
-          if (status.message?.startsWith("Fel:")) {
-            throw new Error(status.message);
-          }
-        }
-        await new Promise((r) => setTimeout(r, 2000));
-      }
-      setCrawlMsg(t("crawlSlow"));
-    } catch (e) {
-      setCrawlMsg(e instanceof Error ? e.message : t("crawlFail"));
-    } finally {
-      setCrawling(false);
-    }
-  };
-
   return (
     <div className="app-shell">
       <header className="app-header">
         <h1 className="app-header-title">{t("appTitle")}</h1>
         <div className="app-header-actions">
           <SettingsBar />
-          <button type="button" onClick={runCrawl} disabled={crawling} className="btn-primary">
-            {crawling ? t("fetching") : t("fetchReal")}
-          </button>
           <span style={{ fontSize: "0.875rem", color: "var(--color-text-muted)" }}>
             {t("countLoppis", { count: loppis.length })}
           </span>
@@ -178,7 +157,7 @@ export default function HomePage() {
 
       <SessionBanner hasSession={!!token} onCreateSession={ensureSession} />
 
-      {crawlMsg && <div className="banner banner-success">{crawlMsg}</div>}
+      {newDataAvailable && <NewLoppisBanner onRefresh={fetchLoppis} />}
       {fetchError && <div className="banner banner-error">{fetchError}</div>}
 
       <FilterPanel

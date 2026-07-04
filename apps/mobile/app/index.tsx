@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import MapView, { Circle, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Circle, Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,6 +21,7 @@ import { getApiClient } from "@/lib/api";
 import { runCrawlAndWait } from "@/lib/crawl";
 import { useI18n } from "@/lib/I18nProvider";
 import { useTheme } from "@/lib/ThemeProvider";
+import { getMapProvider, hasGoogleMapsKey } from "@/lib/maps";
 
 export default function MapScreen() {
   const { t, reliabilityLabel, ready: i18nReady, locale } = useI18n();
@@ -127,44 +128,52 @@ export default function MapScreen() {
         onUseLocation={useMyLocation}
       />
 
-      <MapView
-        style={styles.map}
-        provider={PROVIDER_GOOGLE}
-        region={{
-          latitude: center.lat,
-          longitude: center.lng,
-          latitudeDelta: delta,
-          longitudeDelta: delta,
-        }}
-        onPress={(e) => setCenter({ lat: e.nativeEvent.coordinate.latitude, lng: e.nativeEvent.coordinate.longitude })}
-      >
-        <Circle
-          center={{ latitude: center.lat, longitude: center.lng }}
-          radius={radiusKm * 1000}
-          strokeColor="rgba(37,99,235,0.6)"
-          fillColor="rgba(37,99,235,0.12)"
-        />
-        <Marker
-          coordinate={{ latitude: center.lat, longitude: center.lng }}
-          pinColor="#dc2626"
-          draggable
-          onDragEnd={(e) =>
-            setCenter({
-              lat: e.nativeEvent.coordinate.latitude,
-              lng: e.nativeEvent.coordinate.longitude,
-            })
+      {hasGoogleMapsKey() ? (
+        <MapView
+          style={styles.map}
+          provider={getMapProvider()}
+          region={{
+            latitude: center.lat,
+            longitude: center.lng,
+            latitudeDelta: delta,
+            longitudeDelta: delta,
+          }}
+          onPress={(e) =>
+            setCenter({ lat: e.nativeEvent.coordinate.latitude, lng: e.nativeEvent.coordinate.longitude })
           }
-        />
-        {loppis.map((item) => (
-          <Marker
-            key={item.id}
-            coordinate={{ latitude: item.lat, longitude: item.lng }}
-            title={item.title}
-            description={formatDateLong(item.start_at, locale)}
-            onCalloutPress={() => router.push({ pathname: "/detail", params: { id: item.id } })}
+        >
+          <Circle
+            center={{ latitude: center.lat, longitude: center.lng }}
+            radius={radiusKm * 1000}
+            strokeColor="rgba(37,99,235,0.6)"
+            fillColor="rgba(37,99,235,0.12)"
           />
-        ))}
-      </MapView>
+          <Marker
+            coordinate={{ latitude: center.lat, longitude: center.lng }}
+            pinColor="#dc2626"
+            draggable
+            onDragEnd={(e) =>
+              setCenter({
+                lat: e.nativeEvent.coordinate.latitude,
+                lng: e.nativeEvent.coordinate.longitude,
+              })
+            }
+          />
+          {loppis.map((item) => (
+            <Marker
+              key={item.id}
+              coordinate={{ latitude: item.lat, longitude: item.lng }}
+              title={item.title}
+              description={formatDateLong(item.start_at, locale)}
+              onCalloutPress={() => router.push({ pathname: "/detail", params: { id: item.id } })}
+            />
+          ))}
+        </MapView>
+      ) : (
+        <View style={[styles.map, styles.mapPlaceholder, { backgroundColor: c.surfaceMuted }]}>
+          <Text style={[styles.mapPlaceholderText, { color: c.textMuted }]}>{t("mapUnavailable")}</Text>
+        </View>
+      )}
 
       <View style={[styles.bottom, { backgroundColor: c.surface, borderColor: c.border }]}>
         <MonthCalendar range={dateRange} onRangeChange={setDateRange} loppis={loppis} />
@@ -216,6 +225,8 @@ const styles = StyleSheet.create({
   favLink: { fontSize: 13, fontWeight: "600" },
   banner: { padding: 8, fontSize: 12 },
   map: { flex: 1, minHeight: 220 },
+  mapPlaceholder: { justifyContent: "center", alignItems: "center", padding: 16 },
+  mapPlaceholderText: { fontSize: 13, textAlign: "center", lineHeight: 18 },
   bottom: { maxHeight: "42%", borderTopWidth: 1 },
   list: { maxHeight: 160 },
   listItem: { padding: 12, borderBottomWidth: 1 },

@@ -23,25 +23,47 @@ Use [Neon](https://neon.tech) (free tier) or [Supabase](https://supabase.com):
 
 ## 3. Build the Android APK
 
+**Important:** EAS commands must run from `apps/mobile`, not the repo root.
+
 ```powershell
+$env:Path = "C:\Program Files\Git\bin;" + $env:Path
 cd C:\temp\Cursor\Loppis\apps\mobile
 
-# Set your deployed API URL (must match step 2)
-$env:EXPO_PUBLIC_API_URL = "https://your-service.onrender.com"
+$pnpm = "$env:APPDATA\npm\pnpm.cmd"
+$env:EXPO_PUBLIC_API_URL = "https://loppisfinder-api.onrender.com"
+$env:APP_VARIANT = "production"
 
 # One-time: log in to Expo
-npx eas-cli login
+& $pnpm dlx eas-cli login
 
-# One-time: link project (creates EAS project on expo.dev)
-npx eas-cli init
+# Verify EAS sees the project (should print @loppisfinder/loppisfinder)
+& $pnpm dlx eas-cli project:info --non-interactive
 
 # Cloud build — produces a downloadable APK (~10–20 min)
-npx eas-cli build --platform android --profile preview --non-interactive
+& $pnpm dlx eas-cli build --platform android --profile preview --non-interactive
+```
+
+Or from repo root (script `cd`s into `apps/mobile` for you):
+
+```powershell
+.\scripts\build-android-apk.ps1
 ```
 
 When the build finishes, EAS prints a download URL. Open it on your phone and install the APK.
 
-## 4. Google Maps (optional)
+## 5. Deploy the web app to Azure
+
+See **[AZURE-DEPLOY.md](./AZURE-DEPLOY.md)** for full steps (Container Registry + App Service).
+
+After deploy:
+
+1. Set `CORS_ORIGINS` on the Render API to your Azure URL (e.g. `https://loppisfinder-web.azurewebsites.net`).
+2. Set `ADMIN_PASSWORD` on the Render API.
+3. Open `https://<your-app>.azurewebsites.net/admin` to manage sources and crawls.
+
+Public users only browse stored loppis — they cannot start crawls. When new data arrives, they see a refresh prompt.
+
+## 6. Google Maps (optional)
 
 Without a Maps API key the app still works but map tiles may be blank on some devices.
 
@@ -57,5 +79,8 @@ Without a Maps API key the app still works but map tiles may be blank on some de
 | Empty map | Add Google Maps API key and rebuild |
 | Crawl slow on free tier | Render free tier sleeps after inactivity — first request wakes it (~30s) |
 | Install blocked | Enable “Install unknown apps” for your browser/file manager |
+| `EAS project not configured` | Run EAS from **`apps/mobile`**, not repo root. Check: `cd apps\mobile; pnpm dlx eas-cli project:info`. Do **not** run `eas init` at repo root — it creates stray `eas.json` / `app.json` there |
+| Admin login fails | Set `ADMIN_PASSWORD` on the API and redeploy. Run DB migration (`alembic upgrade head` on deploy) |
+| Web CORS error | Add your Azure web URL to API `CORS_ORIGINS` |
 | Render deploy failed | Check **Logs** in Render dashboard. Common fixes: set `DATABASE_URL` (Neon URL with `postgresql+asyncpg://`), enable PostGIS in Neon, then **Manual Deploy → Clear build cache & deploy** |
 | Migration / SSL error | Use Neon **direct** connection string; PostGIS: `CREATE EXTENSION postgis;` |

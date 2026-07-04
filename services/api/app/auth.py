@@ -53,3 +53,28 @@ async def get_optional_user(
         return await get_current_user(credentials, db)
     except HTTPException:
         return None
+
+
+def create_admin_token() -> tuple[str, datetime]:
+    expires = utcnow() + timedelta(hours=24)
+    payload = {"sub": "admin", "exp": expires, "type": "admin"}
+    token = jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
+    return token, expires
+
+
+async def require_admin(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(security)],
+) -> None:
+    if not settings.admin_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Admin is not configured (set ADMIN_PASSWORD)",
+        )
+    if not credentials:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Admin login required")
+    try:
+        payload = jwt.decode(credentials.credentials, settings.jwt_secret, algorithms=["HS256"])
+        if payload.get("type") != "admin" or payload.get("sub") != "admin":
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
+    except JWTError as exc:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid admin token") from exc

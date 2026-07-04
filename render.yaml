@@ -25,7 +25,9 @@ services:
       - key: CORS_ORIGINS
         value: "*"
       - key: CRAWL_AUTO_INTERVAL_HOURS
-        value: "6"
+        value: "0"
+      - key: ADMIN_PASSWORD
+        sync: false
       - key: REDIS_URL
         value: ""
       - key: DATABASE_URL

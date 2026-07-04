@@ -137,6 +137,131 @@ a {
   color: var(--color-error-text);
 }
 
+.new-loppis-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-shell {
+  min-height: 100vh;
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.admin-card {
+  max-width: 420px;
+  margin: 80px auto;
+  padding: 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.admin-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.admin-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.admin-section h2 {
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+}
+
+.admin-muted {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.admin-form input,
+.admin-form select {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.admin-form-inline {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.admin-form-inline input,
+.admin-form-inline select {
+  min-width: 160px;
+  flex: 1;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.admin-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.admin-table th,
+.admin-table td {
+  border-bottom: 1px solid var(--color-border);
+  padding: 10px 8px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.admin-table a {
+  word-break: break-all;
+}
+
 .btn-primary {
   padding: 6px 12px;
   border-radius: 6px;
